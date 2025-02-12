@@ -1,25 +1,51 @@
 import logo from './logo.svg';
 import './App.css';
+import React, { useState } from "react";
 
 function App() {
+  const [items, setItems] = useState([
+    { id: 1, order: 1},
+    { id: 2, order: 2},
+    { id: 3, order: 3},
+    { id: 4, order: 4},
+  ]);
+  
+  const [draggedItem, setDraggedItem] = useState(null);
+  
+  
+  const handleDrop = (id) => {
+    if (draggedItem === null || draggedItem === id) return;
+  
+    const draggedIndex = items.findIndex((item) => item.id === draggedItem);
+    const targetIndex = items.findIndex((item) => item.id === id);
+  
+    const [movedItem] = items.splice(draggedIndex, 1);
+    items.splice(targetIndex, 0, movedItem);
+  
+    const updatedItems = items.map((item) => ({
+      ...item,
+    }));
+  
+    setItems(updatedItems);
+    setDraggedItem(null);
+  };
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <ul>
+      {items.map((item) => (
+        <li
+          key={item.id}
+          draggable
+          onDragStart={() => setDraggedItem(item.id)}
+          onDragOver={(e)=>e.preventDefault()}
+          onDrop={() => handleDrop(item.id)}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+           Order: {item.order} , id : {item.id}
+        </li>
+      ))}
+    </ul>
   );
-}
+  };
+  
 
 export default App;
